@@ -1,0 +1,90 @@
+-Dados--------------------------------------------------------------------------
+0:  0
+1:  1
+2:  i: <valor>
+3:  j: <valor>
+4:  k: <valor>
+5:  alpha: <valor>
+6:  beta: <valor>
+7:  n: <valor>
+8:  m: <valor>
+9:  <"ponteiro" para C> (11)
+10: <"ponteiro" para A> (11 + (n*n))
+11: alloc( (n*n) ): <valores de C>
+11+(n*n): alloc( (n*m) ): <valores de A>
+
+-Programa-----------------------------------------------------------------------
+main:
+17: LOAD M(0)
+    STOR M(i)
+18: LOAD M(0)
+    STOR M(j)
+19: LOAD M(0)
+    STOR M(k)
+20: LOAD M(i)
+    loop: SUB M(n)
+21:     JUMP+ fim_loop
+        LOAD M(j)
+22:     loop_2: SUB M(n)
+            JUMP+ fim_loop_2
+23:         LOAD MQ, M(i)
+            MUL M(n)
+24:         LOAD MQ
+            ADD M(j)
+25:         ADD M("ponteiro" para C)
+            STOR M(pos_a, ??:??)
+26:         STOR M(pos_b, ??:??)
+            pos_a: LOAD MQ, M(xxx)
+27:         MUL M(beta)
+            LOAD MQ
+28:         pos_b: STOR M(xxx)
+            LOAD M(j)
+29:         ADD M(1)
+            STOR M(j)
+30:         JUMP loop_2
+        fim_loop_2: LOAD M(0)
+31:     STOR M(j)
+        LOAD M(k)
+32:     loop_3: SUB M(m)
+            JUMP+ fim_loop_3
+33:         LOAD M(j)
+            loop_4: SUB M(n)
+34:             JUMP+ fim_loop_4
+                LOAD MQ, M(i)
+35:             MUL M(n)
+                LOAD MQ
+36:             ADD M(j)
+                ADD M("ponteiro" para C)
+37:             STOR M(pos_x, ??:??)
+                STOR M(pos_y, ??:??)
+38:             LOAD MQ, M(i)
+                MUL M(m)
+39:             LOAD MQ
+                ADD M(k)
+40:             ADD M("ponteiro" para A)
+                STOR M(pos_c, ??:??)
+41:             LOAD MQ, M(j)
+                MUL M(m)
+42:             LOAD MQ
+                ADD M(k)
+43:             ADD M("ponteiro" para A)
+                STOR M(pos_d, ??:??)
+44:             pos_c: LOAD MQ, M(xxx)
+                pos_d: MUL M(xxx)
+45:             MUL M(alpha)
+                LOAD MQ
+46:             pos_x: ADD M(xxx)
+                pos_y: STOR M(xxx)
+47:             LOAD M(j)
+                ADD M(1)
+48:             STOR M(j)
+                JUMP loop_4
+49:         fim_loop_4: LOAD M(k)
+            ADD M(1)
+50:         STOR M(k)
+            JUMP loop_3
+51:     fim_loop_3: LOAD M(i)
+        ADD M(1)
+52:     STOR M(j)
+        JUMP loop
+53: fim_loop: EXIT
