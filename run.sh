@@ -4,6 +4,7 @@ docker_flag=false
 gem5_path=""
 image=""
 programa=""
+tipo_preditor=""
 
 function usage {
     echo "Usage: 
@@ -28,7 +29,16 @@ done
 
 # Check if gem5 path is provided
 if [ -z "$gem5_path" ]; then
-    usage
+    gem5_path="$HOME/gem5"
+fi
+
+if [ -z "$programa" ]; then
+    echo "INFO: Compilando programa:"
+    gcc -o ./assembly/syrk.out -no-pie ./assembly/syrk.s
+    programa="./assembly/syrk.out"
+fi
+if [ ! -d "$gem5_path/tests/test-progs/syrk" ]; then
+    mkdir "$gem5_path/tests/test-progs/syrk"
 fi
 
 # Execute gem5 with provided path
@@ -37,26 +47,19 @@ if [ "$docker_flag" = true ]; then
         echo "ERRO: Imagem Docker não fornecida."
         exit 1
     fi
-    if [ -z "$programa" ]; then
-        echo "INFO: Compilando programa:"
-        gcc -o ./assembly/syrk.out -no-pie ./assembly/syrk.s
-        programa="./assembly/syrk.out"
-    fi
-    if [ ! -d "$gem5_path/tests/test-progs/syrk" ]; then
-        mkdir "$gem5_path/tests/test-progs/syrk"
-    fi
 
     echo "INFO: Movendo programa para o gem5:"
     cp "$programa" "$gem5_path/tests/test-progs/syrk/syrk.out"
 
     echo "INFO: Abrindo imagem Docker: $image"
     # docker build Dockerfile -t "syrk-gem5"
-    docker run -v "$gem5_path:/gem5" -it $image /bin/bash -c "cd /gem5; ./build/X86/gem5.opt configs/deprecated/example/se.py --cmd=tests/test-progs/syrk/syrk.out --cpu-type=O3CPU --bp-type=LocalBP --caches"
+    read -p "qual preditor de branch deseja usar? ('LocalBP', 'BiModeBP'): " tipo_preditor
+    docker run -v "$gem5_path:/gem5" -it $image /bin/bash -c "cd /gem5; ./build/X86/gem5.opt configs/deprecated/example/se.py --cmd=tests/test-progs/syrk/syrk.out --cpu-type=O3CPU --bp-type=$tipo_preditor --caches"
 else
     cd "$gem5_path/gem5"
     run_gem5
 fi
 
 function run_gem5 {
-    ./build/X86/gem5.opt configs/deprecated/example/se.py --cmd=tests/test-progs/syrk/syrk.out --cpu-type=O3CPU --bp-type=LocalBP --caches
+    ./build/X86/gem5.opt configs/deprecated/example/se.py --cmd=tests/test-progs/syrk/syrk.out --cpu-type=O3CPU --bp-type=$tipo_preditor --caches
 }
