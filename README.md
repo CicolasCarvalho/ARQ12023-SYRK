@@ -1,5 +1,4 @@
 # Como Usar
------------
 
 para instalações locais do gem5, basta usar o comando
 
