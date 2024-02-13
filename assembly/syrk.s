@@ -64,9 +64,9 @@ main:
     call    print_array
 
     # free_array(C, A)
-    # movq    -16(%rbp), %rdi
-    # movq    -24(%rbp), %rsi
-    # call    free_array
+    movq    -16(%rbp), %rdi
+    movq    -24(%rbp), %rsi
+    call    free_array
 
     leave
     ret
